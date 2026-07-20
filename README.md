@@ -1,10 +1,14 @@
 # VoxFE
 
-VoxFE release repository.
+Packaged VoxFE distributions as folders, not release zip archives.
 
-Current packaged release:
+Included distributions:
 
-- Windows native FASTJAPCG
-- Windows WSL2 Ubuntu PETSc/MPI
+- `01_Windows_native_FASTJAPCG`
+- `02_Windows_WSL2_Ubuntu_PETSc_MPI`
 
-See the GitHub Releases page for downloadable packages and first-time installation notes.
+Large P1 models are intentionally not included in this repository payload. Both distributions include the lightweight example model at:
+
+`models/Macaque_light`
+
+Read `README_INSTALL_FIRST_TIME.md` before first use.

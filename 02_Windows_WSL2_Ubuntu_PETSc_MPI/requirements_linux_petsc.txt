@@ -1,0 +1,10 @@
+numpy
+scipy
+petsc4py
+mpi4py
+numba
+pyamg
+pyvista
+vtk
+pillow
+imageio
