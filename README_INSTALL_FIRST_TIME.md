@@ -190,6 +190,31 @@ MPI_PROCS=16
 
 More ranks can be faster, but not always. Communication overhead and PETSc/GAMG setup can make very high rank counts slower.
 
+## PETSc/GAMG tuning notes
+
+The WSL2 PETSc solver keeps `selected_node_diagnostics.csv` enabled. In the 2026-07-20 optimized build, repeated `SELECT_NODE_3D` diagnostics are cached so validation on the full100 repaired model completes in about 8 seconds on the tested WSL2 setup.
+
+For large elasticity models, PETSc/GAMG is sensitive to the vector nature of the problem. The solver now sets PETSc matrix block size to 3 for 3D displacement DOFs.
+
+Optional experimental variables:
+
+```bash
+export VOXFE_PETSC_GAMG_THRESHOLD=0.05
+export VOXFE_PETSC_GAMG_COORDINATES=1
+export VOXFE_PETSC_NEAR_NULLSPACE=1
+```
+
+Recommended order for benchmarking on a high-RAM machine:
+
+```text
+baseline: no optional variables
+threshold: VOXFE_PETSC_GAMG_THRESHOLD=0.02, then 0.05, then 0.08
+coordinates: add VOXFE_PETSC_GAMG_COORDINATES=1
+near-nullspace: test only after the previous cases, because it can change GAMG stability
+```
+
+Always check `production_valid`, `solution_valid`, and `residual_norm_relative` in the JSON summary. PETSc can report KSP convergence with an internal norm while the final physical residual check remains stricter.
+
 ## Troubleshooting
 
 If PETSc import fails inside the virtual environment, recreate it with:
