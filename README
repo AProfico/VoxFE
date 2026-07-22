@@ -1,65 +1,261 @@
-VoxFE 0.40 clean release
+# VoxFE 0.40 — Clean Release
 
-This release is designed primarily for Windows users.
-The graphical program runs on Windows, while the fastest solver for large models can be launched from Ubuntu through WSL2.
+VoxFE 0.40 is designed primarily for **Windows users**.
 
-Folder layout:
+The graphical viewer and editor run on Windows, while the faster solver intended for large models can be launched from **Ubuntu**, either natively or through **WSL2**.
 
+---
+
+## Folder Structure
+
+```text
+VoxFE_0.40/
+├── 01_Windows_VoxFE_UV_0_40/
+└── 02_Ubuntu_WSL_PETSc_MPI_0_40/
+```
+
+### `01_Windows_VoxFE_UV_0_40`
+
+Contains the Windows graphical application and solver.
+
+* Windows graphical viewer and editor
+* Windows solver: **MRBRJAPCG**
+* Local Python `.venv` included
+* Example models included
+
+The application can normally be launched without rebuilding the Python environment.
+
+Old logs, old displacement files, cache files, temporary data and experimental solver builds have been intentionally excluded from this clean release.
+
+### `02_Ubuntu_WSL_PETSc_MPI_0_40`
+
+Contains the solver environment for Ubuntu, WSL2 or native Linux.
+
+* Linux solver: **PETSCGAMG**, using PETSc and MPI
+* MRBRJAPCG package included for compatibility and reference
+* Example models included
+
+---
+
+## Which Version Should I Use?
+
+| Task                         | Recommended environment | Launcher or solver                           |
+| ---------------------------- | ----------------------- | -------------------------------------------- |
+| Open, edit or inspect models | Windows                 | `LAUNCH_VoxFE_UV_0_40_WINDOWS.bat`           |
+| Solve medium-sized models    | Windows                 | `RUN_MACAQUE_OLD_WINDOWS_MRBRJAPCG_0_40.bat` |
+| Solve large models           | Ubuntu or WSL2          | `PETSCGAMG` with PETSc/MPI                   |
+
+For large models, copy the Ubuntu solver folder into the WSL2 Linux filesystem before running the solver.
+
+---
+
+## Windows Requirements
+
+* Windows 10 or Windows 11
+* Python environment included in the local `.venv`
+* Required Python packages listed in `requirements.txt`
+
+The included `.venv` should already contain the Python libraries required by the graphical application.
+
+If the environment is missing or damaged:
+
+1. Install **Python 3.11 or Python 3.12** from [python.org](https://www.python.org/).
+
+2. Open the folder:
+
+   ```text
+   01_Windows_VoxFE_UV_0_40
+   ```
+
+3. Run:
+
+   ```text
+   INSTALL_OR_UPDATE_DEPENDENCIES.bat
+   ```
+
+---
+
+## Launching the Windows Application
+
+Open:
+
+```text
 01_Windows_VoxFE_UV_0_40
-- Windows graphical viewer/editor.
-- Windows solver: MRBRJAPCG.
-- Local .venv included, so the app can be launched without rebuilding the Python environment.
-- Example models only. Old logs, old displacement files, cache files and experimental solver builds are intentionally excluded.
+```
 
-02_Ubuntu_WSL_PETSc_MPI_0_40
-- Solver folder for Ubuntu, WSL2 or native Linux.
-- Linux solver: PETSCGAMG through PETSc/MPI.
-- MRBRJAPCG package included only as a compatibility/reference solver.
-- Example models only.
+Then run:
 
-What to use:
-- For opening/editing/checking models: use Windows and launch LAUNCH_VoxFE_UV_0_40_WINDOWS.bat.
-- For solving medium models on Windows: use RUN_MACAQUE_OLD_WINDOWS_MRBRJAPCG_0_40.bat.
-- For large models: copy the Ubuntu folder into WSL2 and use PETSCGAMG.
+```text
+LAUNCH_VoxFE_UV_0_40_WINDOWS.bat
+```
 
-Windows requirements:
-- Windows 10 or Windows 11.
-- The included .venv should already contain the needed Python libraries for the viewer.
-- If the environment is missing or damaged, install Python 3.11 or 3.12 from python.org and run INSTALL_OR_UPDATE_DEPENDENCIES.bat inside 01_Windows_VoxFE_UV_0_40.
-- Required Windows Python libraries are listed in requirements.txt.
+To solve the included Macaque example using the Windows MRBRJAPCG solver, run:
 
-Ubuntu / WSL2 requirements:
-- WSL2 with Ubuntu installed.
-- Miniforge or Miniconda.
-- A conda environment with python, numpy, scipy, mpi4py, petsc, petsc4py and openmpi.
+```text
+RUN_MACAQUE_OLD_WINDOWS_MRBRJAPCG_0_40.bat
+```
 
-Recommended Ubuntu setup:
-1. Open Ubuntu.
-2. Install Miniforge if needed:
-   wget -O Miniforge3.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-   bash Miniforge3.sh
-   source ~/miniforge3/etc/profile.d/conda.sh
+---
 
-3. Create the solver environment:
-   conda create -n voxfe-petsc-mpi -c conda-forge python=3.11 numpy scipy mpi4py petsc petsc4py openmpi -y
+## Ubuntu and WSL2 Requirements
 
-4. Activate it:
-   source ~/miniforge3/etc/profile.d/conda.sh
-   conda activate voxfe-petsc-mpi
+The Linux solver requires:
 
-5. Copy the Ubuntu solver folder into Ubuntu home:
-   cp -r "/mnt/c/path/to/VoxFE_0.40/02_Ubuntu_WSL_PETSc_MPI_0_40" ~/VoxFE_0.40
+* Ubuntu, either native or through WSL2
+* Miniforge or Miniconda
+* Python
+* NumPy
+* SciPy
+* mpi4py
+* PETSc
+* petsc4py
+* OpenMPI
 
-6. Run a model:
-   cd ~/VoxFE_0.40
-   MPI_PROCS=4 METHOD=PETSCGAMG bash ./solve_macaque_old_petsc_mpi_0_40.sh
+---
 
-Important solver notes:
-- Windows MRBRJAPCG was validated against the old VoxFEA solver on the Macaque test case when the same material constants are used.
-- Ubuntu PETSCGAMG is expected to be better for very large models, but memory usage depends strongly on model size, constraint layout and preconditioner construction.
-- On a 32 GB RAM machine, start with MPI_PROCS=4. Do not jump immediately to 12 or more ranks.
+## Recommended Ubuntu Setup
 
-Important material fix in 0.40:
-- Legacy YOUNG_MODULUS and POISSON_RATIO script entries are preserved correctly.
-- Default material names are neutral: MATERIAL_1, MATERIAL_2, MATERIAL_3, etc.
-- Legacy names like BONE and METAL are still accepted for old scripts, but material 2 is not automatically treated as metal.
+### 1. Open Ubuntu
+
+Launch your Ubuntu or WSL2 terminal.
+
+### 2. Install Miniforge
+
+Skip this step if Miniforge is already installed.
+
+```bash
+wget -O Miniforge3.sh \
+  https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+
+bash Miniforge3.sh
+source ~/miniforge3/etc/profile.d/conda.sh
+```
+
+### 3. Create the Solver Environment
+
+```bash
+conda create \
+  -n voxfe-petsc-mpi \
+  -c conda-forge \
+  python=3.11 \
+  numpy \
+  scipy \
+  mpi4py \
+  petsc \
+  petsc4py \
+  openmpi \
+  -y
+```
+
+### 4. Activate the Environment
+
+```bash
+source ~/miniforge3/etc/profile.d/conda.sh
+conda activate voxfe-petsc-mpi
+```
+
+### 5. Copy the Solver Folder into Ubuntu
+
+Replace `/mnt/c/path/to/VoxFE_0.40` with the actual Windows path containing the release.
+
+```bash
+cp -r \
+  "/mnt/c/path/to/VoxFE_0.40/02_Ubuntu_WSL_PETSc_MPI_0_40" \
+  ~/VoxFE_0.40
+```
+
+> **Important:** Running the solver from the Linux filesystem, such as your Ubuntu home directory, is generally preferable to running it directly from `/mnt/c/`.
+
+### 6. Run the Example Model
+
+```bash
+cd ~/VoxFE_0.40
+
+MPI_PROCS=4 \
+METHOD=PETSCGAMG \
+bash ./solve_macaque_old_petsc_mpi_0_40.sh
+```
+
+---
+
+## Solver Notes
+
+### Windows MRBRJAPCG
+
+The Windows MRBRJAPCG solver was validated against the old VoxFEA solver using the Macaque test case when the same material constants were used.
+
+### Ubuntu PETSCGAMG
+
+PETSCGAMG is expected to be more suitable for very large models.
+
+However, memory usage can vary substantially depending on:
+
+* model size;
+* number and distribution of constraints;
+* number of MPI processes;
+* matrix structure;
+* preconditioner construction.
+
+### Recommended MPI Configuration
+
+On a computer with **32 GB of RAM**, start with:
+
+```bash
+MPI_PROCS=4
+```
+
+Do not immediately increase the process count to 12 or more. A larger number of MPI processes does not necessarily reduce memory usage or improve performance.
+
+---
+
+## Material Handling Fixes in Version 0.40
+
+Version 0.40 corrects the handling of legacy material definitions.
+
+### Preserved Legacy Parameters
+
+The following script entries are now preserved correctly:
+
+```text
+YOUNG_MODULUS
+POISSON_RATIO
+```
+
+### Neutral Default Material Names
+
+Default materials now use neutral names:
+
+```text
+MATERIAL_1
+MATERIAL_2
+MATERIAL_3
+...
+```
+
+### Legacy Material Names
+
+Legacy names such as the following remain supported:
+
+```text
+BONE
+METAL
+```
+
+These names are accepted for compatibility with older scripts.
+
+> **Important:** Material 2 is no longer automatically interpreted or treated as metal. Material behaviour is determined by its assigned mechanical properties, not by its numerical position.
+
+---
+
+## Clean Release Notes
+
+This release intentionally excludes:
+
+* old log files;
+* previous displacement results;
+* Python cache directories;
+* temporary files;
+* obsolete test outputs;
+* experimental solver builds.
+
+Only the files required to run the graphical application, the supported solvers and the example models are included.
