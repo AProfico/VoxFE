@@ -1,8 +1,0 @@
-numpy
-scipy
-pyamg
-numba
-pyvista
-vtk
-pillow
-imageio
