@@ -1,0 +1,83 @@
+VoxFE 0.40 PETSc/MPI tutorial for Ubuntu and WSL2
+
+Purpose
+This folder lets a Windows user run the large-model solver from Ubuntu or WSL2.
+The graphical VoxFE-UV application remains in the Windows folder.
+
+Why Ubuntu/WSL2
+Large voxel FEA models benefit from PETSc/MPI, which is easier and more reliable to install through conda-forge on Linux than on native Windows.
+
+Recommended machine settings
+- 32 GB RAM: start with MPI_PROCS=4.
+- 64 GB RAM: try MPI_PROCS=4 or MPI_PROCS=6.
+- 128-200 GB RAM: try MPI_PROCS=8 or more, then monitor memory.
+- Avoid using too many MPI ranks if memory is already high. GAMG can require substantial RAM during preconditioner construction.
+
+First-time setup in Ubuntu
+
+1. Install Miniforge:
+   wget -O Miniforge3.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+   bash Miniforge3.sh
+   source ~/miniforge3/etc/profile.d/conda.sh
+
+2. Create the solver environment:
+   conda create -n voxfe-petsc-mpi -c conda-forge python=3.11 numpy scipy mpi4py petsc petsc4py openmpi -y
+
+3. Activate the environment:
+   source ~/miniforge3/etc/profile.d/conda.sh
+   conda activate voxfe-petsc-mpi
+
+Copy the solver folder from Windows into Ubuntu
+
+Example:
+   cp -r "/mnt/c/Users/anton/path/to/VoxFE_0.40/02_Ubuntu_WSL_PETSc_MPI_0_40" ~/VoxFE_0.40
+
+Use the copy inside /home/anton, not the Windows /mnt/c path, for better file I/O performance.
+
+Run the validation model
+
+   cd ~/VoxFE_0.40
+   MPI_PROCS=4 METHOD=PETSCGAMG bash ./solve_macaque_old_petsc_mpi_0_40.sh
+
+Run the 2.5M model
+
+   cd ~/VoxFE_0.40
+   MPI_PROCS=4 METHOD=PETSCGAMG bash ./solve_macaque_2_5m_petsc_mpi_0_40.sh
+
+Common options
+
+Use more or fewer MPI ranks:
+   MPI_PROCS=6 METHOD=PETSCGAMG bash ./solve_macaque_2_5m_petsc_mpi_0_40.sh
+
+Change tolerance:
+   MPI_PROCS=4 METHOD=PETSCGAMG TOLERANCE=1e-06 bash ./solve_macaque_2_5m_petsc_mpi_0_40.sh
+
+Use a maximum iteration count:
+   MPI_PROCS=4 METHOD=PETSCGAMG MAX_ITER=60000 bash ./solve_macaque_2_5m_petsc_mpi_0_40.sh
+
+Outputs
+Each run writes outputs inside the model folder:
+- displacement.txt
+- force.txt
+- sed.csv
+- residual_history.csv
+- voxfe_solver_summary_*.json
+- voxel_coordinates_loaded.tsv
+- voxel_coordinates_unloaded.tsv
+- solver_*.log
+
+Troubleshooting
+
+If bash reports "Illegal option -o pipefail", you launched with sh instead of bash.
+Use:
+   bash ./solve_macaque_old_petsc_mpi_0_40.sh
+
+If Python modules are missing, activate conda:
+   source ~/miniforge3/etc/profile.d/conda.sh
+   conda activate voxfe-petsc-mpi
+
+If MPI says there are not enough slots, lower MPI_PROCS or use hardware threads intentionally.
+For a first serious run, prefer fewer ranks and stable memory use.
+
+If the solver seems stuck during GAMG setup, check RAM.
+GAMG preconditioner construction can be the expensive step on full-resolution models.
