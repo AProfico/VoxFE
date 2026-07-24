@@ -1,0 +1,18 @@
+VoxFE-UV 0.41 Windows clean release
+
+This package intentionally does not include a copied .venv.
+A Windows .venv stores absolute Python paths and is not reliably portable.
+
+Included:
+- VoxFE_UV_0_41.pyz GUI
+- SOLVER_0_41_mrbrjapcg.pyz Windows solver
+- INSTALL_OR_UPDATE_DEPENDENCIES.bat to create/update .venv locally
+- Windows launch and solve BAT files
+- clean example models without previous solver outputs
+- documentation and displacement comparison R script
+
+Start here:
+1. Extract the zip.
+2. Double-click LAUNCH_VoxFE_UV_0_41_WINDOWS.bat.
+3. If .venv is missing, the launcher starts INSTALL_OR_UPDATE_DEPENDENCIES.bat.
+4. To solve any external case, copy SOLVE_THIS_FOLDER_WINDOWS_MRBRJAPCG_0_41.bat into the folder containing Script.txt.

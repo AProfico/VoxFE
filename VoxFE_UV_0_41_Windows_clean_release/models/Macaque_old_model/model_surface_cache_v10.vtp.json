@@ -1,0 +1,11 @@
+{
+  "cache_version": 10,
+  "model_name": "model.txt",
+  "model_size": 6124743,
+  "model_mtime": 1784797276.0932026,
+  "voxel_size": [
+    1.0,
+    1.0,
+    1.0
+  ]
+}
